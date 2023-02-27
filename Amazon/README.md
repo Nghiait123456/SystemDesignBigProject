@@ -5,6 +5,7 @@
 - [Explain Common](#explain-common)
     - [HomePage Flow](#home-page-flow)
     - [User Search Flow](#user-search-flow)
+    - [User Purchase Flow](#user-purchase-flow)
 
 ## Preview <a name="preview"></a>
 
@@ -146,7 +147,7 @@ Search Service also has a function that does not find and display out of stock p
 list product search to Out Of Stock Service and Out Of Stock Service will return products that are out of stock. Why
 need Out Of Stock service without having to get information directly from Elastic Search. Elastic Search takes time to
 update inventory, reIndex, ... larger than realtime search demand. Elastic Search is not generated for real-time search,
-detail in https://www.elastic.co/guide/en/elasticsearch/reference/current/near-real-time.html. 
+detail in https://www.elastic.co/guide/en/elasticsearch/reference/current/near-real-time.html.
 Out Of Stock Service will do a simple job, return all Out Of Stock products from the inbound item list. It must ensure
 relatively high realtime and extremely short response time, extremely large number of queries. First, every time a
 product is out of stock or from out of stock to in stock, Inventory Service will send events to kafka, Out Of Stock will
@@ -195,4 +196,127 @@ clusters, and the user's specific address will be in one of those clusters. Afte
 address cluster, it needs to be fine-tuned to get the shortest distance to that address. This work is similar to the
 work of google map. I am no expert in this area, I can elaborate on it on another occasion. The key is that all
 information must be calculated background and available, to ensure realtime for search and payment operations. </br>
+
+## User Purchase Flow  <a name="user-purchase-flow"></a>
+
+Ordering: When a user places an order, the request is routed to the order talking service, an order management system
+that communicates with the order. The order data can be split into tables: customer, item table, order, transaction,
+transaction_history, .... These tables are closely related to each other and have strict ACID requirements. Mysql
+Cluster will be selected for this problem. </br>
+
+Order Talking Service is the centralized point for coordinating and processing follow orders, payments,... The first
+thing that Order Talking Service needs to make sure is that at a time, there is only one event, one request client,...
+interacts with the Order Talking Service, this is guaranteed with the Red-lock Redis cluster. A request to Order Talking
+Service, an identifier for that request is generated with the OrderId. If it's the first time to create an order (
+orders not yet in redis will be considered first and vice versa), I will save in redis: key is the order ID, content:
+
+```
+{
+order_id
+created_at
+expiry_time
+status: "created"
+}
+```
+
+Next, the required function is not to over-purchase, Order Talking Service will call Inventory Service to determine if
+there is an exact stock for this product. The most difficult problem of e-commerce will arise here. With normal logic, I
+need to put a transaction at the mysql layer or a lock at the cache layer. Transaction and lock DB will lock that
+warehouse, and only the first order request can join the order, after that, I release the lock, commit or rollback
+transaction. A similar job happens with lock redis. But when there are hundreds of thousands, millions of requests to
+buy one or a group of products, mysql will not be able to handle it. In normal mode, mysql can only handle a few hundred
+update commands per second. The payment request needs extremely high realtime, so putting it on the queue and processing
+the background will not be possible. Here, there are 2 most popular solutions: sharding mysql or ignoring the database
+in the calculation. The easiest solution to implement and the most likely to increase the load is Sharding Mysql, the
+tool chosen here is Mysql Cluster. Mysql Cluster will provide the easiest way to increase mysql performance without much
+processing. Another solution is to skip IO, the most famous architecture known is
+LMAX(https://martinfowler.com/articles/lmax.html). Digging too deep into LMAX would be within the scope of this
+document, I have a projetc that implements LMAX Service quite similar to ecommerce but for
+payment-gatewat: https://github.com/Nghiait123456/HighPerformancePaymentGateway-BalanceService. </br>
+
+When Inventory Service has successfully confirmed the order, Order Talking Service will update the redis status
+to: </br>
+
+```
+
+{
+order_id
+created_at
+expiry_time
+status: "checked_inventory"
+}
+
+```
+
+Next, Order Talking Service will talk to Risk Service to manage all risks related to orders, payments, cards, suppliers,
+weather,... After successful, Order Talking Service will change status to "pending_checkout", talk to Checkout Service
+to proceed payment of the order. </br>
+
+At checkout service, the first thing to do is check with the Pricing Service to make sure there is no abnormality in the
+current price compared to the information from the Order Talking Service sent over, if there are any abnormalities, the
+item will be cancelled. Checkout Service checks again with the total amount of the order so that nothing is wrong. If
+there is any error, the order will be canceled, the Order Talking Service will receive the event and update the order
+status in redis. Order Talking Service via socket or event sourcing to send this failure result to the user via the
+device to directly pay and display the screen to the User. Order Talking Service will send a failed payment event,
+services like Order Service will receive the event and update accordingly. </br>
+
+```
+
+{
+order_id
+created_at
+expiry_time
+status: "fail_checkout"
+}
+
+```
+
+If all double check information is correct, Checkout Service will send event: Ready-For-Checkout of that order Id, Order
+Talking Service receive event and send socket to front-end, user screen redirects to payment screen . From here, the
+transaction flow coordination for the user will be performed by the checkout Service. There are three possible outcomes
+from this payment flow: Success, failure, or no response.
+
+When all payments are successful, the User will be redirected to the success screen managed by the Order Talking
+Service. If the order is successful at 8:05 and the expiry time is 8:10, everything is valid, the Order Talking Service
+will update the status: "checkout_success" and send an event to Kafka for the other services to update the DB
+accordingly. The expiry time of the order we will place is very large, much larger than my service timeout and related
+services, to avoid race conditions over timeout orders with successful orders. However, if the successful order event
+comes after the timeout order event, the Order Talking Service will save the status as status: "exception_checkout" with
+the corresponding error code. To avoid a race conditions, Order Talking Service will not send success payment event, it
+just sends event exception checkout and Service Exception Handle will handle this later. This is necessary and very
+rare, so it is allowed to exist in this design. Enabling this will reduce extremely complex race conditions between our
+distributed systems. At the beginning of the article, we always only allow 1 event, a request to interact with an order
+in Order Talking Service, so there will never be a case, 2 events succeed and expire at the same time.
+
+When the payment fails, the action is the same as the successful payment but with the status "error_checkout". The
+inventory service will have to listen for this event and rollback inventory. </br>
+When the order timeout, the record will be deleted from redis, and the Order Talking Service will also have the same
+action procedure as when it fails, only different status : "timeout". </br>
+
+At this point, the Purchase Follow flow has been completed, I would like to clarify some bottleneck issues. A system
+like Amazon can have many millions of orders a day, and an order must be kept for at least several years for audit. 10
+years, Amazon has 10 * 365 * 5 * 10 ^6 orders, this terrible number is the bottleneck of mysql. DB is too large will
+affect mysql's ability to work normally, migration is required. There are many solutions for this, the most common being
+cold and hot databases. Orders that are in a final, immutable state can be backed up to warm or cold mysql clusters.
+Here, these orders no longer have the ability to change status, it is just a request to read information, and the
+reading information will be as simple as querying by OrderId, querying by status, created_at, category,... me will
+choose
+Cassandra for this service. The Order processing service is an order management service, event notification about any
+change of order, order search. The Archiver System will search the row of orders in the last state, send them to the
+History Order System. Here, the History Order System will add the order to Cassandra and send the event to Kafka. Order
+Processing System when receiving the event, delete the order from mysql. A request to review order information will be
+made to the History Order System via the Order Processing System. </br>
+
+The shipping information will be updated in the respective Order History depending on the business of each
+carrier. </br>
+
+## User Profile Flow  <a name="user-profile-flow"></a>
+
+User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
+Redis. This is done by getting service information, updating via event sourcing. </br>
+
+
+## ToDO Infra explain, update images,....
+
+
 
