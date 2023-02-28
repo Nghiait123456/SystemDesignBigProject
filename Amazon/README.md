@@ -6,6 +6,7 @@
     - [HomePage Flow](#home-page-flow)
     - [User Search Flow](#user-search-flow)
     - [User Purchase Flow](#user-purchase-flow)
+- [Infra Explain](#infra-explain)
 
 ## Preview <a name="preview"></a>
 
@@ -315,8 +316,15 @@ carrier. </br>
 User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
 Redis. This is done by getting service information, updating via event sourcing. </br>
 
+## Infra Explain  <a name="infra-explain"></a>
+## Load Balance  <a name="load-balance"></a>
 
-## ToDO Infra explain, update images,....
+A large product like Amazon, users are scattered across the globe and at peak times, can have several million rps. (This
+is an assumed number of this design, the actual number may be many times larger). With those peculiarities, I needed a
+distributed LB that could intelligently navigate the load and was highly fault tolerant.</br>
 
+I have a more detailed analysis of
+this: https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/1_LoadBalancing#load_balancer_region_base_dns_and_l4lb, https://github.com/Nghiait123456/InfraSREDevopsBackend/InfraSREDevops/
+/1_LoadBalancing#load_balancer_with_bgp_software </br>
 
 
