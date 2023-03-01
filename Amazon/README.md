@@ -17,7 +17,6 @@
     - [Fire Ware](#file-ware)
     - [Rate Limit](#rate-limit)
     - [Http Server](#http-server)
-    - [Explain Common](#explain-common)
 
 ## Preview <a name="preview"></a>
 
@@ -61,7 +60,8 @@ A Homepage is the soul of an e-commerce site, it is a determining factor in whet
 design a flexible homepage suitable for regions and users. </br>
 
 Every time a user visits, the homepage service will rely on the user's ip to determine the appropriate common homepage
-load. Common homepage will have parameters like: top N best-selling categories and X products of each category, flat sale
+load. Common homepage will have parameters like: top N best-selling categories and X products of each category, flat
+sale
 information, menu... it will be loaded by territory, installed by admin page. </br>
 
 We have a recommendation service, which are customized and customized according to the individual user (if the user is
