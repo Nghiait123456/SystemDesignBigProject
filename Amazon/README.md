@@ -15,7 +15,7 @@ common to detail. </br>
 
 ## Design <a name="design"></a>
 
-![AWS-system-design.png](img%2FAWS-system-design.png) </br>
+![AMZ-system-design.png](img%2FAMZ-system-design.png) </br>
 
 ## Functional Requirements <a name="functional_requirements"></a>
 
@@ -113,7 +113,7 @@ In frontend, all files, css, js, images, videos ... will be loaded from CDN and 
 html files will have to be cached according to the version in the browser to reduce the CDN load. </br>
 These are the most common notes for the homepage service to meet the needs of the problem. </br>
 
-![homepage_aws_cache.png](img%2Fhomepage_aws_cache.png) </br>
+![homepage_awz_cache.png](img%2Fhomepage_awz_cache.png) </br>
 
 ## User Search Flow  <a name="user-search-flow"></a>
 
@@ -199,7 +199,7 @@ work of google map. I am no expert in this area, I can elaborate on it on anothe
 information must be calculated background and available, to ensure realtime for search and payment operations. </br>
 
 ## User Purchase Flow  <a name="user-purchase-flow"></a>
-
+![user_purchase_flow.png](img%2Fuser_purchase_flow.png) </br>
 Ordering: When a user places an order, the request is routed to the order talking service, an order management system
 that communicates with the order. The order data can be split into tables: customer, item table, order, transaction,
 transaction_history, .... These tables are closely related to each other and have strict ACID requirements. Mysql
@@ -317,7 +317,7 @@ warehousing always must have a Reconciliation Service running in parallel. There
 complicated to deal with by software, but by humans it will be very simple. </br>
 
 ## User Profile Flow  <a name="user-profile-flow"></a>
-
+![user_profile_service.png](img%2Fuser_profile_service.png)
 User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
 Redis. This is done by getting service information, updating via event sourcing. </br>
 
