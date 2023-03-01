@@ -330,7 +330,7 @@ complicated to deal with by software, but by humans it will be very simple. </br
 
 ## User Profile Flow  <a name="user-profile-flow"></a>
 
-![user_profile_service.png](img%2Fuser_profile_service.png)
+![user_profile_service.png](img%2Fuser_profile_service.png) </br>
 User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
 Redis. This is done by getting service information, updating via event sourcing. </br>
 
