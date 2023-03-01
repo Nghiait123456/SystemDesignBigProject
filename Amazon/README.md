@@ -123,8 +123,7 @@ the homePage service will have a minimum time for an update of x seconds. </br>
 In frontend, all files, css, js, images, videos ... will be loaded from CDN and must be loaded from CDN. The css, js,
 html files will have to be cached according to the version in the browser to reduce the CDN load. </br>
 These are the most common notes for the homepage service to meet the needs of the problem. </br>
-
-![homepage_awz_cache.png](img%2Fhomepage_awz_cache.png) </br>
+![homepage_amz_cache.png](img%2Fhomepage_amz_cache.png)</br>
 
 ## User Search Flow  <a name="user-search-flow"></a>
 
