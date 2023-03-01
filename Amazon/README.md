@@ -218,7 +218,7 @@ Cluster will be selected for this problem. </br>
 
 Order Talking Service is the centralized point for coordinating and processing follow orders, payments,... The first
 thing that Order Talking Service needs to make sure is that at a time, there is only one event, one request client,...
-interacts with one Order throw Order Talking Service, this is guaranteed with the Red-lock Redis cluster. A request to
+interacts with one Order via Order Talking Service, this is guaranteed with the Red-lock Redis cluster. A request to
 Order Talking Service, an identifier for that request is generated with the OrderId. If it's the first time to create an
 order (
 orders not yet in redis will be considered first and vice versa), I will save in redis: key is the order ID, content:
