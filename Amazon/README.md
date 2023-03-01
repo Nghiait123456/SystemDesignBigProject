@@ -6,7 +6,18 @@
     - [HomePage Flow](#home-page-flow)
     - [User Search Flow](#user-search-flow)
     - [User Purchase Flow](#user-purchase-flow)
+    - [User Profile Flow](#user-profile-flow)
 - [Infra Explain](#infra-explain)
+    - [Load Balance](#load-balance)
+    - [Api Gateway](#api-gateway)
+    - [Redis cluster](#redis-cluster)
+    - [MongoDB](#mongodb)
+    - [Cassandra](#cassandra)
+    - [Mysql Cluster](#mysql-cluster)
+    - [Fire Ware](#file-ware)
+    - [Rate Limit](#rate-limit)
+    - [Http Server](#http-server)
+    - [Explain Common](#explain-common)
 
 ## Preview <a name="preview"></a>
 
@@ -50,13 +61,13 @@ A Homepage is the soul of an e-commerce site, it is a determining factor in whet
 design a flexible homepage suitable for regions and users. </br>
 
 Every time a user visits, the homepage service will rely on the user's ip to determine the appropriate common homepage
-load. Common homepage will have parameters like: top N best-selling categories and X products of each category, flatsale
+load. Common homepage will have parameters like: top N best-selling categories and X products of each category, flat sale
 information, menu... it will be loaded by territory, installed by admin page. </br>
 
 We have a recommendation service, which are customized and customized according to the individual user (if the user is
-logged in), or by ID define (cookie, app,...). A personnal homapage means, imagine, a user who is always disinterested
+logged in), or by ID define (cookie, app,...). A personal homepage means, imagine, a user who is always disinterested
 in one group of items, and is always interested and interested in another. For a good customer experience, the things
-customers hate or never buy will not appear on the homepage. A merchine learning will work on the data ware house to
+customers hate or never buy will not appear on the homepage. A machine learning will work on the data ware house to
 come up with the best personalized information. </br>
 
 Combining the two services, we have the homepage information. </br>
@@ -199,6 +210,7 @@ work of google map. I am no expert in this area, I can elaborate on it on anothe
 information must be calculated background and available, to ensure realtime for search and payment operations. </br>
 
 ## User Purchase Flow  <a name="user-purchase-flow"></a>
+
 ![user_purchase_flow.png](img%2Fuser_purchase_flow.png) </br>
 Ordering: When a user places an order, the request is routed to the order talking service, an order management system
 that communicates with the order. The order data can be split into tables: customer, item table, order, transaction,
@@ -317,6 +329,7 @@ warehousing always must have a Reconciliation Service running in parallel. There
 complicated to deal with by software, but by humans it will be very simple. </br>
 
 ## User Profile Flow  <a name="user-profile-flow"></a>
+
 ![user_profile_service.png](img%2Fuser_profile_service.png)
 User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
 Redis. This is done by getting service information, updating via event sourcing. </br>
