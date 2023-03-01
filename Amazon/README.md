@@ -311,12 +311,18 @@ made to the History Order System via the Order Processing System. </br>
 The shipping information will be updated in the respective Order History depending on the business of each
 carrier. </br>
 
+Finally, Reconciliation Service will automatically match all import and export orders in Inventory Service with Order
+Service, all abnormalities will be alerted. Errors are almost not allowed to occur, but the financial system,
+warehousing always must have a Reconciliation Service running in parallel. There will be anomalies that will be very
+complicated to deal with by software, but by humans it will be very simple. </br>
+
 ## User Profile Flow  <a name="user-profile-flow"></a>
 
 User Profile Service will be a read-only service, it aggregates the necessary information of the User and saves it in
 Redis. This is done by getting service information, updating via event sourcing. </br>
 
 ## Infra Explain  <a name="infra-explain"></a>
+
 ## Load Balance  <a name="load-balance"></a>
 
 A large product like Amazon, users are scattered across the globe and at peak times, can have several million rps. (This
@@ -327,4 +333,46 @@ I have a more detailed analysis of
 this: https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/1_LoadBalancing#load_balancer_region_base_dns_and_l4lb, https://github.com/Nghiait123456/InfraSREDevopsBackend/InfraSREDevops/
 /1_LoadBalancing#load_balancer_with_bgp_software </br>
 
+## Api Gateway  <a name="api-gateway"></a>
 
+I have a more detailed analysis of
+this: https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/26_ApiGateway#type_pai_gateway_in_microservice,
+https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/26_ApiGateway#how_do_choose_api_gateway </br>
+
+## Redis cluster <a name="redis-cluster"></a>
+
+I have a more detailed anlysis of
+this : https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/blob/master/InfraSREDevops/3_Cache/README.md#cache_cluster_is_require_for_high_load,
+https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/blob/master/InfraSREDevops/3_Cache/README.md#benchmark_rediss </br>
+
+## MongoDB <a name="mongodb"></a>
+
+When to choose mongoDB and benchmark, I have a detailed description at the
+link: https://github.com/Nghiait123456/SystemDesignBigProject/blob/master/BestPracticeChooseDataBase/README.md, https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/blob/master/InfraSREDevops/9_NoSql/MongoDb/REAME.md </br>
+
+## Cassandra <a name="cassandra"></a>
+
+When to choose Cassandra and benchmark, I have a detailed description at the
+link: https://github.com/Nghiait123456/SystemDesignBigProject/blob/master/BestPracticeChooseDataBase/README.md, https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/blob/master/InfraSREDevops/9_NoSql/Cassandra/README.md#benchmark_cassandra </br>
+
+## Mysql Cluster <a name="mysql-cluster"></a>
+
+When to choose Mysql Cluster and benchmark, I have a detailed description at the
+link: https://github.com/Nghiait123456/SystemDesignBigProject/blob/master/BestPracticeChooseDataBase/README.md, https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/blob/master/InfraSREDevops/8_Sql/Mysql/Sharding/README.md#BenchmarkMysqlCluster </br>
+
+## Fire Ware <a name="file-ware"></a>
+
+Firewall, security and ddos prevention system is an important part. Preventing ddos is a difficult problem, because the
+reason the threshold of ddos load is very large, much larger than your infrastructure. Please use third party for this
+work. I have a link that describes the problem in
+detail: https://github.com/Nghiait123456/DissectLaravel#why_do_not_use_rate_limit_laravel_for_attack_ddos, https://github.com/Nghiait123456/DissectLaravel#best_practice_prevent_attack_ddos</br>
+
+## Rate Limit <a name="rate-limit"></a>
+
+I have detail rate limit in
+link: https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/2_RateLimit </br>
+
+## Http Server <a name="http-server"></a>
+
+I have detail scale out http server in
+link: https://github.com/Nghiait123456/InfraSREDevopsBackendForBigProject/tree/master/InfraSREDevops/16_HttpServer </br>
