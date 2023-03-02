@@ -154,8 +154,8 @@ in the calculation. The easiest solution to implement and the most likely to inc
 tool chosen here is Mysql Cluster. Mysql Cluster will provide the easiest way to increase mysql performance without much
 processing. Another solution is to skip IO, the most famous architecture known is
 LMAX(https://martinfowler.com/articles/lmax.html). Digging too deep into LMAX would be within the scope of this
-document, I have a projetc that implements LMAX Service quite similar to ecommerce but for
-payment-gatewat: https://github.com/Nghiait123456/HighPerformancePaymentGateway-BalanceService. </br>
+document, I have a projetc that implements LMAX Service quite similar for
+payment-gateway: https://github.com/Nghiait123456/HighPerformancePaymentGateway-BalanceService. </br>
 
 Now, the merchant wants to pay for the order, the application information and Mastercard's digital signature need to be
 passed to the frontend. Process will automatically navigate to Checkout Follow. For orders that are payment with a third
@@ -175,7 +175,8 @@ distributed systems. At the beginning of the article, we always only allow 1 eve
 in Order Talking Service, so there will never be a case, 2 events succeed and expire at the same time.
 
 IPN to Merchant Service will receive successful order information, build IPN and send IPN to merchant. The important
-information to verify is the amount, digital signature. </br>. When the order is successful, it will also be redirected
+information to verify is the amount, digital signature. </br>
+When the order is successful, it will also be redirected
 to a notification screen managed by Order Talking Service. In this step, Order Talking Service will build a callback
 url, this url points to the url that merchant has registered if the payment is successful. </br>
 
