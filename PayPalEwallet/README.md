@@ -96,7 +96,7 @@ find, edit, delete,... provider. </br>
 ## Merchant Search Flow:  <a name="merchant-search-flow"></a>
 
 ![merchant-search-flow.png](img%2Fmerchant-search-flow.png)</br>
-With payment gateway, the search is not as much as ecommerce, it is mainly search operation. However, there are search
+With eWallet, the search is not as much as ecommerce, it is mainly search operation. However, there are search
 needs about advertising campaigns, bonus points, statistics on the results of that campaign. A Search Consumer will
 listen to kafka and push important information to the ElasticSearch Cluster. ElasticSearch Cluster is a search
 engine that allows full flexible search functionality. Details are available at the
@@ -126,7 +126,7 @@ author entry into Paypal will also be managed by the User Service. </br>
 
 User flow will manage all adding, using, deleting... card of the user. </br>
 
-## Order Flow:  <a name="order-flow"></a>ication
+## Order Flow:  <a name="order-flow"></a>
 
 ![order-flow.png](img%2Forder-flow.png)</br>
 We have Order Talking Service which serves the entire process of order creation, checkout,... It is the big follow flow
@@ -228,7 +228,8 @@ When the payment fails, the action is the same as the successful payment but wit
 inventory service will have to listen for this event and rollback inventory. </br>
 When the order timeout, the record will be deleted from redis, and the Order Talking Service will also have the same
 action procedure as when it fails, only different status : "timeout". The event timeout will be pushed back by the redis
-cluster through Kafka and to the OrderTalkingService. </br>
+cluster through Kafka and to the OrderTalkingService. Event timeout is valid only and is handled by the order talking
+service if the order is in processing status, not the end state. </br>
 
 For internal checkout, the processing steps are similar, except that you don't have to talk to a third party to complete
 the checkout. </br>
@@ -243,7 +244,7 @@ the reading information will be as simple as querying by OrderId, querying by st
 Cassandra for this service. The Order processing service is an order management service, event notification about any
 change of order, order search. The Archiver System will search the row of orders in the last state, send them to the
 History Order System. Here, the History Order System will add the order to Cassandra and send the event to Kafka. Order
-Processing System when receiving the event, delete the order from mysql. A request to review order information will be
+Processing System when receiving the event, delete the order from mysql. A request to view order information will be
 made to the History Order System. </br>
 
 The Error Checking Service will run in the background to check for all irregularities, orders that have not been change

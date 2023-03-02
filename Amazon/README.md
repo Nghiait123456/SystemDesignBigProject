@@ -304,7 +304,9 @@ in Order Talking Service, so there will never be a case, 2 events succeed and ex
 When the payment fails, the action is the same as the successful payment but with the status "error_checkout". The
 inventory service will have to listen for this event and rollback inventory. </br>
 When the order timeout, the record will be deleted from redis, and the Order Talking Service will also have the same
-action procedure as when it fails, only different status : "timeout". </br>
+action procedure as when it fails, only different status : "timeout". Event timeout is valid only and is handled by the
+order talking
+service if the order is in processing status, not the end state. </br>
 
 At this point, the Purchase Follow flow has been completed, I would like to clarify some bottleneck issues. A system
 like Amazon can have many millions of orders a day, and an order must be kept for at least several years for audit. 10

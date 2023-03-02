@@ -184,7 +184,8 @@ When the payment fails, the action is the same as the successful payment but wit
 inventory service will have to listen for this event and rollback inventory. </br>
 When the order timeout, the record will be deleted from redis, and the Order Talking Service will also have the same
 action procedure as when it fails, only different status : "timeout". The event timeout will be pushed back by the redis
-cluster through Kafka and to the OrderTalkingService. </br>
+cluster through Kafka and to the OrderTalkingService. Event timeout is valid only and is handled by the order talking
+service if the order is in processing status, not the end state. </br> </br>
 
 For internal checkout, the processing steps are similar, except that you don't have to talk to a third party to complete
 the checkout. </br>
