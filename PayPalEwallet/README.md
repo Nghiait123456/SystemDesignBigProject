@@ -60,8 +60,8 @@ experience in handling race conditions. Here we go... </br>
 ## Onboard Merchant Flow:  <a name="onboard-merchant-flow"></a>
 
 ![merchant-flow.png](img%2Fmerchant-flow.png) </br>
-A large payment gateway like MasterCard has billions of users and thousands of merchants around the world. To be a
-merchant of MasterCard, you will have to register with Merchant Service via Onboard Merchant Flow. The number of
+A large eWallet like PayPal has billions of users and thousands of merchants around the world. To be a
+merchant of PayPal, you will have to register with Merchant Service via Onboard Merchant Flow. The number of
 merchants will not be too large, almost never more than 1 million merchants, the data has a clear structure, close
 relationships, we only need one mysql for this service. Read information will be cached with Redis Cluster. Technically,
 the frequency of reading and writing of this service is not high, the race condition when invalidate cache is low, so it
@@ -81,15 +81,15 @@ from merchant_key). On some important payment orders, a digital signature genera
 ## Merchant Flow:  <a name="merchant-flow"></a>
 
 ![merchant-flow.png](img%2Fmerchant-flow.png) </br>
-After successfully registering as a merchant of MasterCard, the merchant can access information and perform operations
-with the master-card system.The authentication, author will be done with Auth, Author Service. </br>
+After successfully registering as a merchant of PayPal, the merchant can access information and perform operations
+with the PayPal's system.The authentication, author will be done with Auth, Author Service. </br>
 
 Risk Service will collect all risks from Order Service, Merchant Service, Provider Service and assess the risk
 information of Partner, of the order. All necessary information will be background calculated by Risk Service, stored in
 Redis Cluster to ensure short response times. This information will be saved in MongoDB and read in Redis Cluster.
 MongoDB selected criteria for risk assessment are often unstructured, and have low read and write output. </br>
 
-A large project like Master Card will have many providers: banks, payment gateways, e-wallets... All this
+A large project like PayPal will have many providers: banks, payment gateways, e-wallets... All this
 information will be taken by the Inbound Service and stored in the Provider Service. It includes onboard new provider,
 find, edit, delete,... provider. </br>
 
@@ -135,8 +135,8 @@ for Order Flow. </br>
 The first thing we need to make sure is that only one request can be handled with one order at a time. This is ensured
 by the red lock of the redis cluster. </br>
 
-First, the end user will create an order with their partner, and the partner calls the Master Card to create an order at
-the Master Card. Order Talking Service will call the Order System to create a new order. Order data that needs absolute
+First, the end user will create an order with their partner, and the partner calls the PayPal to create an order at
+the PayPal. Order Talking Service will call the Order System to create a new order. Order data that needs absolute
 ACID should be saved to Mysql DB Cluster. </br>
 
 There is a point worth noting, Order Talking Service will return the Merchant the order information and a piece of
@@ -193,7 +193,7 @@ In payment models that require a call to the balance service to check, there wil
 For orders that must check the amount before payment, Order Talking Service will talk to the Balance Service to request
 balance processing. This is a difficult service because of the high number of race conditions and integrity, high real
 time. Balance Service needs to ensure fast Merchant withdrawal and 100 percent ACID guarantee. With a large company like
-MasterCard, there can be tens of thousands of orders to deduct money from a merchant's balance at a time. This number
+PayPal, there can be tens of thousands of orders to deduct money from a merchant's balance at a time. This number
 exceeds the processing capacity of mysql default. Here, there are 2 most popular solutions: sharding mysql or ignoring
 the database
 in the calculation. The easiest solution to implement and the most likely to increase the load is Sharding Mysql, the
@@ -234,8 +234,8 @@ For internal checkout, the processing steps are similar, except that you don't h
 the checkout. </br>
 
 At this point, the Purchase Follow flow has been completed, I would like to clarify some bottleneck issues. A system
-like MasterCard can have many millions of orders a day, and an order must be kept for at least several years for audit.
-In 10 years, MasterCard has 10 * 365 * 5 * 10 ^6 orders, this terrible number is the bottleneck of mysql. DB is too
+like PayPal can have many millions of orders a day, and an order must be kept for at least several years for audit.
+In 10 years, PayPal has 10 * 365 * 5 * 10 ^6 orders, this terrible number is the bottleneck of mysql. DB is too
 large will affect mysql's ability to work normally, migration is required. There are many solutions for this, the most
 common being cold and hot databases. Orders that are in a final, immutable state can be backed up to warm or cold mysql
 clusters. Here, these orders no longer have the ability to change status, it is just a request to read information, and
@@ -279,7 +279,7 @@ I will have to have flexible and skillful handling to overcome the disadvantages
 
 ## Load Balance  <a name="load-balance"></a>
 
-A large product like MasterCard, users are scattered across the globe and at peak times, can have several million rps. (
+A large product like PayPal, users are scattered across the globe and at peak times, can have several million rps. (
 This
 is an assumed number of this design, the actual number may be many times larger). With those peculiarities, I needed a
 distributed LB that could intelligently navigate the load and was highly fault tolerant.</br>
