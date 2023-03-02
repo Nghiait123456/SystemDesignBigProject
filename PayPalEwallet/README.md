@@ -1,7 +1,6 @@
 - [Preview](#preview)
 - [Design](#design)
 - [Functional Requirements](#functional_requirements)
-- [Functional Requirements](#functional_requirements)
 - [Non Function](#non_function)
 - [Explain Common](#explain-common)
     - [Onboard Merchant Flow](#onboard-merchant-flow)
