@@ -1,6 +1,7 @@
 - [Preview](#preview)
 - [Design](#design)
 - [Functional Requirements](#functional_requirements)
+- [Functional Requirements](#functional_requirements)
 - [Non Function](#non_function)
 - [Explain Common](#explain-common)
     - [Onboard Merchant Flow](#onboard-merchant-flow)
@@ -23,12 +24,12 @@
 
 ## Preview <a name="preview"></a>
 
-I will design aws e-commerce system serving billions of users. This design will go no-function to function, top-down,
+I will design PayPal eWallet system serving billions of users. This design will go no-function to function, top-down,
 common to detail. </br>
 
 ## Design <a name="design"></a>
 
-![Mastercard-system-design.png](img%2FMastercard-system-design.png)</br>
+![Paypal-system-design.png](img%2FPaypal-system-design.png)</br>
 
 ## Functional Requirements <a name="functional_requirements"></a>
 
@@ -37,6 +38,7 @@ common to detail. </br>
 +) Find order information.</br>
 +) Provider Balance Service providers handle race conditions with millions of people checkout. </br>
 +) Auto Reconciliation, Manual Reconciliation. </br>
++) User onboard, withdraw, deposit, checkout smoothly, view history order, history balance. </br>
 +) Admin Page. </br>
 
 ## Non Function <a name="non_function"></a>
@@ -57,7 +59,7 @@ experience in handling race conditions. Here we go... </br>
 
 ## Onboard Merchant Flow:  <a name="onboard-merchant-flow"></a>
 
-![onboard-merchant-flow.png](img%2Fonboard-merchant-flow.png) </br>
+![merchant-flow.png](img%2Fmerchant-flow.png) </br>
 A large payment gateway like MasterCard has billions of users and thousands of merchants around the world. To be a
 merchant of MasterCard, you will have to register with Merchant Service via Onboard Merchant Flow. The number of
 merchants will not be too large, almost never more than 1 million merchants, the data has a clear structure, close
@@ -78,7 +80,7 @@ from merchant_key). On some important payment orders, a digital signature genera
 
 ## Merchant Flow:  <a name="merchant-flow"></a>
 
-![onboard-merchant-flow.png](img%2Fonboard-merchant-flow.png) </br>
+![merchant-flow.png](img%2Fmerchant-flow.png) </br>
 After successfully registering as a merchant of MasterCard, the merchant can access information and perform operations
 with the master-card system.The authentication, author will be done with Auth, Author Service. </br>
 
@@ -93,7 +95,7 @@ find, edit, delete,... provider. </br>
 
 ## Merchant Search Flow:  <a name="merchant-search-flow"></a>
 
-![merchant-search-flow.png](img%2Fmerchant-search-flow.png) </br>
+![merchant-search-flow.png](img%2Fmerchant-search-flow.png)</br>
 With payment gateway, the search is not as much as ecommerce, it is mainly search operation. However, there are search
 needs about advertising campaigns, bonus points, statistics on the results of that campaign. A Search Consumer will
 listen to kafka and push important information to the ElasticSearch Cluster. ElasticSearch Cluster is a search
@@ -112,6 +114,7 @@ an expert on this, I'm not going to talk about it in depth, this is the most gen
 
 ## User Flow:  <a name="user-flow"></a>
 
+![user-flow.png](img%2Fuser-flow.png) </br>
 User service will manage all user activities: Onboard new user, update, read, delete user... Deposit, WithDraw will be
 managed by Balance Service. All user information: { user_id, email, pass_hash, .... } are related information,
 structure, Mysql cluster will be selected. The read will be taken in the Redis cluster. Race conditions when cache
@@ -121,9 +124,11 @@ invalidate, it can be handled simply that the first thread reads in the DB and u
 All deposits and withdrawals will be periodically reconciled with Reconciliation Service. The user's authentication and
 author entry into Paypal will also be managed by the User Service. </br>
 
+User flow will manage all adding, using, deleting... card of the user. </br>
+
 ## Order Flow:  <a name="order-flow"></a>ication
 
-![order-follow.png](img%2Forder-follow.png) </br>
+![order-flow.png](img%2Forder-flow.png)</br>
 We have Order Talking Service which serves the entire process of order creation, checkout,... It is the big follow flow
 for Order Flow. </br>
 
@@ -247,7 +252,7 @@ process, an Error Checking Service is needed to detect and correct deviations ea
 
 ## Reconciliation Flow  <a name="reconciliation-flow"></a>
 
-![reconcilliation-flow.png](img%2Freconcilliation-flow.png) </br>
+![reconciliation-flow.png](img%2Freconciliation-flow.png) </br>
 Reconciliation is an integral part of any financial product. Simply, we will match the data at the elapsed time.
 Reconciliation will take information from the Balance Service, Order History Service and compile it into its own
 reconciliation report. Merchant can automatically verify and get this report via Api. There will be a part of the
@@ -260,7 +265,7 @@ issues, any abnormalities will be sent and notified to relevant parties </br>
 
 ## Admin Flow <a name="admin-flow"></a>
 
-![admin-flow.png](img%2Fadmin-flow.png) </br>
+![admin-folow.png](img%2Fadmin-folow.png) </br>
 A payment gateway has a lot of information to set up, manage, and set up. I call it admin service. It will change the
 settings for the system, for the merchant, send the kafka change, notify the change to the stakeholders notify the
 service. The setup will have structured, relational and non-struct data at the same time. The read and write frequency

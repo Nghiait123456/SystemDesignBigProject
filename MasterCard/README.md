@@ -22,7 +22,7 @@
 
 ## Preview <a name="preview"></a>
 
-I will design aws e-commerce system serving billions of users. This design will go no-function to function, top-down,
+I will design payment gateway system serving billions of users. This design will go no-function to function, top-down,
 common to detail. </br>
 
 ## Design <a name="design"></a>
