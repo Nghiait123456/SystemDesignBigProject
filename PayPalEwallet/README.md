@@ -48,10 +48,10 @@ common to detail. </br>
 +) High consistency. </br>
 +) Security. </br>
 
-A payment gateway system that meets all three factors above with a high traffic, billions of users is a difficult
+A payment EWallet system that meets all four factors above with a high traffic, billions of users is a difficult
 problem.
-To clarify, there are some services that must strictly meet 3 factors: balance, checkout, ... Search service needs
-high availability and does not need absolute consistency. Service order's history requires 3 factors
+To clarify, there are some services that must strictly meet 4 factors: balance, checkout, order ... Search service needs
+high availability and does not need absolute consistency. Service order's history requires 4 factors
 above, but not absolutely. To thoroughly solve this problem, it is necessary to combine a lot of knowledge and
 experience in handling race conditions. Here we go... </br>
 
