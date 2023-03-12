@@ -90,7 +90,7 @@ Now, we will follow this figure for reference for choosing sql or nosql:
    Cassandra) and row database (MongoDB). As a simple rule, no-sql database has large read and write, and has many
    complex queries, flexible query, complete as of a product, mongoDB is often chosen. And if your data has a very large
    read frequency with many simple queries, then Cassandra is a solution. To elaborate on this, I have a more detailed
-   link: </br>
+   link: https://github.com/Nghiait123456/SystemDesignBigProject/blob/master/BestPracticeChooseDataBase/MONGODBVSCASSANDRA.md </br>
 
 An extremely important issue of choosing a database is combining databases. A product will have many types of DBs
 suitable for many business characteristics, a flexible combination is required to solve the problem. For example:
